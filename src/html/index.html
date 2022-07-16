@@ -8,6 +8,31 @@
     <title>Evalución final</title>
   </head>
   <body>
+    <header>
+      <h1 class="title">Buscador de series animes</h1>
+    </header>
+    <main class="main">
+      <form class="form" action="">
+        <input
+          type="text"
+          class="js_input"
+          name="search"
+          id="search"
+          placeholder="Nombre de la serie"
+        />
+        <button type="submit" class="js_submit">Buscar</button>
+        <button type="reset" class="js_reset">Reset</button>
+      </form>
+      <section class="results">
+        <h2 class="results__title">Resultados</h2>
+        <ul class="js_results_list"></ul>
+      </section>
+      <section class="favorites">
+        <h2 class="favorites__title">Series favoritas</h2>
+        <ul class="js_favorites_list"></ul>
+        <!--<button type="reset">Borrar favoritas</button>-->
+      </section>
+    </main>
     <script src="./assets/js/main.js"></script>
   </body>
 </html>
