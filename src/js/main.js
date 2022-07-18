@@ -12,30 +12,21 @@ let cardFounded = []; //guardar lo que devuelve img y title, resultado
 let cardFavorites = [];  //guardar los favoritos
 
 
+// funciones
 
-function handleClick(event) {
-    const idSelected = parseInt(event.currentTarget.mal_id);
+// fetch para obtener datos del servidor
 
-    const cardFound = cardFounded.find((oneCard) => oneCard.mal_id === idSelected);
-
-    const favoriteFound = cardFavorites.findIndex((fav) => fav.mal_id === idSelected);
-    
-    if(favoriteFound === -1) {
-        cardFavorites.push(cardFound); 
-    } else {
-        cardFavorites.splice(favoriteFound, 1);
-    }
-    renderCardFounded(cardFounded); //los datos de la api
-     
-}
-
-
-
-function listenerCards() {
-    const liCard = document.querySelectorAll(".js-list-cards");
-    for (const li of liCard) {
-        li.addEventListener("click", handleClick);
-    }
+function getData() {
+    fetch(`https://api.jikan.moe/v4/anime?q=${userInput.value}`)  //o userInput.value
+    .then((response) => response.json()) 
+    .then((data) => {
+        
+        cardFounded = data.data;
+        console.log(data); 
+        localStorage.setItem('data', JSON.stringify(cardFavorites));
+        renderCardFounded(cardFounded);//cuando vengan datos de api
+        
+    }); 
 }
 
 
@@ -52,60 +43,82 @@ function renderCardFounded(arrayCardFounded) {
             classFavorite = "";
         }
 
-        html += `<li class="js-list-cards" ${classFavorite} id=${oneCard.mal_id}>`;
+        html += `<li class="js-list-cards ${classFavorite}" id="${oneCard.mal_id}">`;
         html += `<img src="${oneCard.images.jpg.image_url}" />`;
         html += `<h3>${oneCard.title}</h3>`;
         html += `</li>`;
     }
+
     resultsList.innerHTML = html;
     listenerCards();
 }
 
 
-// fetch para obtener datos del servidor
 
-function getData() {
-    fetch(`https://api.jikan.moe/v4/anime?q=${userInput}`)
-    .then((response) => response.json()) 
-    .then((data) => {
-        cardFounded = data; 
-        localStorage.setItem('data', JASON.stringify(cardFavorites));
-        renderCardFounded(cardFounded);//cuando vengan datos de api
-    }); 
+// función que escucha
+function listenerCards() {
+    const liCard = document.querySelectorAll(".js-list-cards");
+    for (const li of liCard) {
+        li.addEventListener("click", handleClick);
+    }
 }
+
+
+// funciones manejadoras de eventos
+
     
 const handleFilter = (event) => {
+    event.preventDefault();
     const inputValue = userInput.value.toLowerCase();
 
     const cardFilter = cardFounded.filter((oneCard) => oneCard.title.toLowerCase().includes(inputValue)
     );
+    getData();
     renderCardFounded(cardFilter);//las cards filtradas
 };
 
 
-
-function handleSearch (event) {
+function handleReset(event) {
     event.preventDefault();
-    
+    userInput.value = "";
+    cardFounded.innerHTML = "";
 }
+
+function handleClick(event) { //no funciona poner en fav
+    const idSelected = parseInt(event.currentTarget.mal_id);
+
+    const cardFound = cardFounded.find((oneCard) => oneCard.mal_id === idSelected);
+
+    const favoriteFound = cardFavorites.findIndex((fav) => fav.mal_id === idSelected);
+    
+    if(favoriteFound === -1) {
+        cardFavorites.push(cardFound); 
+    } else {
+        cardFavorites.splice(favoriteFound, 1);
+    }
+    renderCardFounded(cardFounded); //pinta los datos de la api
+     
+}
+
+
 
 function onLoad() { //se ejecuta cuando carga la página
     const dataLocalStorage = JSON.parse(localStorage.getItem('data'));
     console.log(dataLocalStorage);
 
     if(dataLocalStorage){
-        cardFounded = dataLocalStorage; //que actualice
-        renderCardFounded(cardFounded); //y que lo pinte
+        cardFavorites = dataLocalStorage; //que actualice
+        
     } else {
         getData(); 
     }
 }
 
-onLoad();
+
 // events
 
-userInput.addEventListener('keyup', handleFilter);
+userInput.addEventListener('click', handleFilter);
+btnSearch.addEventListener('click', handleFilter);
+btnReset.addEventListener('click', handleReset);
 
-btnSearch.addEventListener('click', handleSearch);
-
-
+onLoad();
