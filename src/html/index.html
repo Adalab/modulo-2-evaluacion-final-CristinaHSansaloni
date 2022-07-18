@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -20,32 +20,13 @@
     <title>Evalución final</title>
   </head>
   <body>
-    <header>
-      <h1 class="title">Buscador de series animes</h1>
-    </header>
+    <include src="./partials/header.html"></include>
     <main class="main">
-      <form class="form" action="">
-        <input
-          type="text"
-          class="js_input"
-          name="search"
-          id="search"
-          placeholder="Escribe el nombre de la serie"
-        />
-        <button type="submit" class="js_search">Buscar</button>
-        <button type="reset" class="js_reset">Reset</button>
-      </form>
-      <section class="favorites">
-        <h2 class="favorites__title">Series favoritas</h2>
-        <ul class="js_favorites"></ul>
-        <!--<button type="reset">Borrar favoritas</button>-->
-      </section>
-      <section class="results">
-        <h2 class="results__title">Resultados</h2>
-        <ul class="js_results"></ul>
-      </section>
+      <include src="./partials/form.html"></include>
+      <include src="./partials/favorites.html"></include>
+      <include src="./partials/results.html"></include>
     </main>
-    <footer></footer>
+    <include src="./partials/footer.html"></include>
     <script src="./assets/js/main.js"></script>
   </body>
 </html>

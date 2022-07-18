@@ -25,7 +25,7 @@ function getData() {
         console.log(data); 
         localStorage.setItem('data', JSON.stringify(cardFavorites));
         renderCardFounded(cardFounded);//cuando vengan datos de api
-        
+        //¿Sacarlo fuera en una const?
     }); 
 }
 
@@ -33,22 +33,31 @@ function getData() {
 //renderizar
 function renderCardFounded(arrayCardFounded) {
     let html = "";
-    let classFavorite = "";
-    for (const oneCard of arrayCardFounded) {
+    let classFavorite = ""; //para ponerle estilos
+    const imgNotFound = "https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"; //si no tiene img
 
-        const favoriteFoundIndex = cardFavorites.findIndex((fav) => oneCard.mal_id === fav.mal_id);
+    for (const oneCard of arrayCardFounded) {
+        const newImage = "https://via.placeholder.com/210x295/ffffff/666666/?text=TV";
+
+        const favoriteFoundIndex = cardFavorites.findIndex((fav) => oneCard.mal_id === fav.mal_id);//puede que sea alreves,fav.id === oneCard.id 
+
         if(favoriteFoundIndex !== -1) { //está
-            classFavorite = "card--favorite";
+            classFavorite = "card--favorite"; //el css
         } else {
             classFavorite = "";
         }
 
         html += `<li class="js-list-cards ${classFavorite}" id="${oneCard.mal_id}">`;
-        html += `<img src="${oneCard.images.jpg.image_url}" />`;
+        if (oneCard.image.jpg.image_url === imgNotFound) {
+            html += `<img src="${newImage}"/>`;
+        } else {
+            html += `<img src="${oneCard.images.jpg.image_url}" />`; //¿puedo poner solo .image?
+        }
         html += `<h3>${oneCard.title}</h3>`;
+        //aquí iría el icono de borrar
         html += `</li>`;
     }
-
+    // estos dos, o return html;
     resultsList.innerHTML = html;
     listenerCards();
 }
