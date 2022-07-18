@@ -1,4 +1,4 @@
-/*@import 'core/variables';
+/*
 
 @import 'components/code';
 @import 'components/links';
@@ -7,4 +7,10 @@
 @import 'layout/footer';
 @import 'pages/index';
 */
+@import 'core/variables';
 @import 'core/reset';
+
+
+.card--favorite {
+    border: 2px solid $color-button;
+}

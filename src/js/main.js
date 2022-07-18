@@ -12,9 +12,21 @@ let cardFounded = []; //guardar lo que devuelve img y title, resultado
 let cardFavorites = [];  //guardar los favoritos
 
 
-// Funciones
+
 function handleClick(event) {
-    console.log(event.currentTarget);
+    const idSelected = parseInt(event.currentTarget.mal_id);
+
+    const cardFound = cardFounded.find((oneCard) => oneCard.mal_id === idSelected);
+
+    const favoriteFound = cardFavorites.findIndex((fav) => fav.mal_id === idSelected);
+    
+    if(favoriteFound === -1) {
+        cardFavorites.push(cardFound); 
+    } else {
+        cardFavorites.splice(favoriteFound, 1);
+    }
+    renderCardFounded(cardFounded); //los datos de la api
+     
 }
 
 
@@ -28,18 +40,26 @@ function listenerCards() {
 
 
 //renderizar
-function renderCardFounded() {
+function renderCardFounded(arrayCardFounded) {
     let html = "";
-    for (const oneCard of cardFounded) {
-        html += `<li class="js-list-cards" id=${oneCard.mal_id}>`;
+    let classFavorite = "";
+    for (const oneCard of arrayCardFounded) {
+
+        const favoriteFoundIndex = cardFavorites.findIndex((fav) => oneCard.mal_id === fav.mal_id);
+        if(favoriteFoundIndex !== -1) { //está
+            classFavorite = "card--favorite";
+        } else {
+            classFavorite = "";
+        }
+
+        html += `<li class="js-list-cards" ${classFavorite} id=${oneCard.mal_id}>`;
         html += `<img src="${oneCard.images.jpg.image_url}" />`;
         html += `<h3>${oneCard.title}</h3>`;
         html += `</li>`;
     }
     resultsList.innerHTML = html;
-    
+    listenerCards();
 }
-
 
 
 // fetch para obtener datos del servidor
@@ -49,25 +69,42 @@ function getData() {
     .then((response) => response.json()) 
     .then((data) => {
         cardFounded = data; 
-        renderCardFounded();
-        listenerCards();
-
+        localStorage.setItem('data', JASON.stringify(cardFavorites));
+        renderCardFounded(cardFounded);//cuando vengan datos de api
     }); 
 }
     
-    
+const handleFilter = (event) => {
+    const inputValue = userInput.value.toLowerCase();
+
+    const cardFilter = cardFounded.filter((oneCard) => oneCard.title.toLowerCase().includes(inputValue)
+    );
+    renderCardFounded(cardFilter);//las cards filtradas
+};
 
 
 
-
-// función manejadora
 function handleSearch (event) {
     event.preventDefault();
-    getData(); //función del fetch
+    
 }
 
+function onLoad() { //se ejecuta cuando carga la página
+    const dataLocalStorage = JSON.parse(localStorage.getItem('data'));
+    console.log(dataLocalStorage);
 
+    if(dataLocalStorage){
+        cardFounded = dataLocalStorage; //que actualice
+        renderCardFounded(cardFounded); //y que lo pinte
+    } else {
+        getData(); 
+    }
+}
+
+onLoad();
 // events
+
+userInput.addEventListener('keyup', handleFilter);
 
 btnSearch.addEventListener('click', handleSearch);
 
