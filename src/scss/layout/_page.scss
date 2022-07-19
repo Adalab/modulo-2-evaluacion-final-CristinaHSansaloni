@@ -1,7 +1,6 @@
-body {
-  padding: 2rem;
-  height: 100vh;
-  background-image: url('../images/bg-adalab.png');
+.body {
+  display: flex;
+  flex-direction: column;
   background-color: $color-bg;
   font-family: $font-main;
 }

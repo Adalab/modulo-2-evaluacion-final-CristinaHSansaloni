@@ -1,0 +1,43 @@
+.form {
+   margin: 15px 5px 30px 30px;
+}
+.input {
+    background-color: transparent;
+    border: 2px solid $color-font;
+    width: 50%;
+    height: 30px;
+    border-radius: 50px;
+    color: $color-font;
+    outline: none;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    &::placeholder{
+        color: $color-border;
+    }   
+    &:focus {
+        background-color: $color-font;
+        color: $color-border;
+    } 
+}
+
+.button {
+    background: $color-button;
+    color: $color-bg;
+    border-radius: 2em;
+    border: none;
+    outline: 2px solid $color-button;
+    outline-offset: 3px;
+    padding: 0.5rem 1rem;
+    height: 40px;
+    width: 100px;
+    font-size: 1rem;
+    cursor: pointer;
+    &:hover {
+        background: $button-hover;
+        outline: 2px solid $button-hover;
+    }
+}
+.search {
+    margin-right: 20px;
+    margin-left: 30px;
+}

@@ -6,10 +6,15 @@ const btnSearch = document.querySelector('.js_search');
 const btnReset = document.querySelector('.js_reset');
 const resultsList = document.querySelector('.js_results');
 const favoritesList = document.querySelector('.js_favorites');
+const btnRemoveFav = document.querySelector('.js-btnRemoveFav')
+
+const imgNotFound = "https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"; 
+const newImage = "https://via.placeholder.com/210x295/ffffff/666666/?text=TV";
 
 // variables /arrays
-let cardFounded = []; //guardar lo que devuelve img y title, resultado
+let cardFounded = []; //guardar lo que devuelve 
 let cardFavorites = [];  //guardar los favoritos
+let cardSelected = []; //guarda los seleccionados
 
 
 // funciones
@@ -17,49 +22,95 @@ let cardFavorites = [];  //guardar los favoritos
 // fetch para obtener datos del servidor
 
 function getData() {
-    fetch(`https://api.jikan.moe/v4/anime?q=${userInput.value}`)  //o userInput.value
+    fetch(`https://api.jikan.moe/v4/anime?q=${userInput.value}`) 
     .then((response) => response.json()) 
-    .then((data) => {
-        
-        cardFounded = data.data;
-        console.log(data); 
-        localStorage.setItem('data', JSON.stringify(cardFavorites));
-        renderCardFounded(cardFounded);//cuando vengan datos de api
-        //¿Sacarlo fuera en una const?
+    .then((json) => {
+        console.log(json);
+        cardFounded = json.data;
+        renderCardFounded();
     }); 
 }
 
 
-//renderizar
-function renderCardFounded(arrayCardFounded) {
+
+//renderizar los encontrados
+function renderCardFounded() { 
     let html = "";
-    let classFavorite = ""; //para ponerle estilos
-    const imgNotFound = "https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"; //si no tiene img
+    let classFavorite = "";
 
-    for (const oneCard of arrayCardFounded) {
-        const newImage = "https://via.placeholder.com/210x295/ffffff/666666/?text=TV";
-
-        const favoriteFoundIndex = cardFavorites.findIndex((fav) => oneCard.mal_id === fav.mal_id);//puede que sea alreves,fav.id === oneCard.id 
-
-        if(favoriteFoundIndex !== -1) { //está
-            classFavorite = "card--favorite"; //el css
+    cardFounded.forEach((item) => {
+        const selected = cardSelected.findIndex((selected) => item.mal_id === selected.mal_id);
+        if (selected !== -1) {
+            classFavorite = "selected"; 
         } else {
             classFavorite = "";
         }
-
-        html += `<li class="js-list-cards ${classFavorite}" id="${oneCard.mal_id}">`;
-        if (oneCard.image.jpg.image_url === imgNotFound) {
-            html += `<img src="${newImage}"/>`;
+        if (item.images.jpg.image_url === imgNotFound) {
+            html += `<li class="js-list-cards ${classFavorite}" id=${item.mal_id}>`;
+            html += `<img src="${newImage}"`;
+            html += `<h3>${item.title}</h3>`;   
         } else {
-            html += `<img src="${oneCard.images.jpg.image_url}" />`; //¿puedo poner solo .image?
+            html += `<li class="js-list-cards ${classFavorite}" id=${item.mal_id}>`;
+            html += `<img src="${item.images.jpg.image_url}" />`;
+            html += `<h3>${item.title}</h3>`;
+            html += `</li>`;
         }
-        html += `<h3>${oneCard.title}</h3>`;
-        //aquí iría el icono de borrar
-        html += `</li>`;
-    }
-    // estos dos, o return html;
+    });
     resultsList.innerHTML = html;
     listenerCards();
+}
+
+//renderizar los favoritos
+function renderFav() { 
+    let html = "";
+
+    cardFavorites.forEach((item) => {
+        if (item.images.jpg.image_url === imgNotFound) {
+            html += `<li class="js-fav-cards id=${item.mal_id}>`;
+            html += `<img src="${newImage}"/>`;
+            html += `<h3>${item.title}</h3>`;
+            html += `</li>`;
+        }
+    });
+    favoritesList.innerHTML = html;
+    listenerFav();
+}
+
+
+
+function removeFav() {
+    cardFavorites = [];
+    cardSelected = [];
+    favoritesList.innerHTML = "";
+    renderCardFounded();
+    //saveMyFavorites();
+    saveFav();
+}
+
+function saveSelected() {
+    localStorage.setItem('cardSelected', JSON.stringify(cardSelected));     
+}
+
+function loadSelected() {
+    const dataLocalStorage = JSON.parse(localStorage.getItem('cardSelected'));
+
+    if(dataLocalStorage !== null){
+        cardSelected = dataLocalStorage; 
+        renderCardFounded();
+    } 
+}
+
+function saveFav() {
+    localStorage.setItem('favoritesList', JSON.stringify(cardFavorites)); 
+}
+
+function loadFav() {
+    const dataLocalStorage = JSON.parse(localStorage.getItem('favoritesList'));
+
+    if(dataLocalStorage !== null){
+        cardFavorites = dataLocalStorage; 
+        renderFav();
+    } 
 }
 
 
@@ -68,9 +119,19 @@ function renderCardFounded(arrayCardFounded) {
 function listenerCards() {
     const liCard = document.querySelectorAll(".js-list-cards");
     for (const li of liCard) {
-        li.addEventListener("click", handleClick);
+        li.addEventListener("click", handleClickCard);
     }
 }
+
+
+
+function listenerFav() {
+    const liCard = document.querySelectorAll(".js-fav-cards");
+    for (const li of liCard) {
+        li.addEventListener("click", handleClickFav);
+    }
+}
+
 
 
 // funciones manejadoras de eventos
@@ -83,7 +144,7 @@ const handleFilter = (event) => {
     const cardFilter = cardFounded.filter((oneCard) => oneCard.title.toLowerCase().includes(inputValue)
     );
     getData();
-    renderCardFounded(cardFilter);//las cards filtradas
+    renderCardFounded(cardFilter);
 };
 
 
@@ -93,41 +154,45 @@ function handleReset(event) {
     cardFounded.innerHTML = "";
 }
 
-function handleClick(event) { //no funciona poner en fav
-    const idSelected = parseInt(event.currentTarget.mal_id);
 
-    const cardFound = cardFounded.find((oneCard) => oneCard.mal_id === idSelected);
+function handleClickCards(event) {
+    const idSelected = parseInt(event.currentTarget.id);
 
-    const favoriteFound = cardFavorites.findIndex((fav) => fav.mal_id === idSelected);
+    const cardFound = cardFounded.find((item) => item.mal_id === idSelected);
+
+    const favoriteFound = cardFavorites.findIndex((item) => cardFound.mal_id === idSelected);
     
     if(favoriteFound === -1) {
         cardFavorites.push(cardFound); 
+        cardSelected.push(cardFound);
     } else {
-        cardFavorites.splice(favoriteFound, 1);
-    }
-    renderCardFounded(cardFounded); //pinta los datos de la api
-     
-}
-
-
-
-function onLoad() { //se ejecuta cuando carga la página
-    const dataLocalStorage = JSON.parse(localStorage.getItem('data'));
-    console.log(dataLocalStorage);
-
-    if(dataLocalStorage){
-        cardFavorites = dataLocalStorage; //que actualice
         
-    } else {
-        getData(); 
     }
+    renderCardFounded();  
+    renderFav();
+    saveFav();
+    saveSelected();
 }
+
+function handleClickFavorites(event) {
+    const clicFavorite = parseInt(event.currentTarget.id);
+    const favoriteFound = cardFavorites.findIndex((item) => item.mal_id === clicFavorite); 
+    const foSelect = cardSelected.findIndex((item) => item.mal_id === favoriteFound);
+
+    cardFavorites.splice(favoriteFound, 1);
+    cardSelected.splice(foSelect, 1);
+    renderCardFounded();
+    renderFav();
+}
+
 
 
 // events
 
 userInput.addEventListener('click', handleFilter);
-btnSearch.addEventListener('click', handleFilter);
-btnReset.addEventListener('click', handleReset);
+btnSearch.addEventListener('click', handleFilter);//
+btnReset.addEventListener('click', handleReset);//
 
-onLoad();
+
+loadFav();
+loadSelected();
