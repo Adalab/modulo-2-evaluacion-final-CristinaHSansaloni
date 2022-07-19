@@ -1,13 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/images/favicon-32x32.png"
+    />
     <link rel="stylesheet" href="./assets/css/main.css" />
     <title>Evalución final</title>
   </head>
-  <body>
+  <body class="body">
+    <header>
+      <h1 class="title">Buscador de series animes</h1>
+    </header>
+
+    <main class="main">
+      <form action="" class="form">
+        <input
+          type="text"
+          class="js_input input"
+          name="search"
+          id="search"
+          placeholder="Escribe el título"
+        />
+        <button type="submit" class="js_search search button">Buscar</button>
+        <button type="reset" class="js_reset reset button">Reset</button>
+      </form>
+
+      <div class="container">
+        <section class="favorites">
+          <h2 class="favorites__title">Series favoritas</h2>
+          <ul class="js_favorites"></ul>
+          <button type="reset" class="js-btnRemoveFav favorites__btn">
+            Eliminar
+          </button>
+        </section>
+        <section class="results">
+          <h2 class="results__title">Resultados</h2>
+          <ul class="js_results"></ul>
+        </section>
+      </div>
+
+    </main>
+    <footer class="footer"></footer>
+
     <script src="./assets/js/main.js"></script>
   </body>
 </html>

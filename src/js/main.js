@@ -46,7 +46,7 @@ function renderCardFounded() {
             classFavorite = "";
         }
         if (item.images.jpg.image_url === imgNotFound) {
-            html += `<li class="js-list-cards ${classFavorite}" id=${item.mal_id}>`;
+            html += `<li class="js-list-cards list__cards ${classFavorite}" id=${item.mal_id}>`;
             html += `<img src="${newImage}"`;
             html += `<h3>${item.title}</h3>`;   
         } else {
@@ -115,11 +115,11 @@ function loadFav() {
 
 
 
-// función que escucha
+// función que escucha card de html
 function listenerCards() {
     const liCard = document.querySelectorAll(".js-list-cards");
     for (const li of liCard) {
-        li.addEventListener("click", handleClickCard);
+        li.addEventListener("click", handleClickCards);
     }
 }
 
@@ -128,7 +128,7 @@ function listenerCards() {
 function listenerFav() {
     const liCard = document.querySelectorAll(".js-fav-cards");
     for (const li of liCard) {
-        li.addEventListener("click", handleClickFav);
+        li.addEventListener("click", handleClickFavorites);
     }
 }
 
@@ -141,7 +141,7 @@ const handleFilter = (event) => {
     event.preventDefault();
     const inputValue = userInput.value.toLowerCase();
 
-    const cardFilter = cardFounded.filter((oneCard) => oneCard.title.toLowerCase().includes(inputValue)
+    const cardFilter = cardFounded.filter((item) => item.title.toLowerCase().includes(inputValue)
     );
     getData();
     renderCardFounded(cardFilter);
@@ -165,13 +165,12 @@ function handleClickCards(event) {
     if(favoriteFound === -1) {
         cardFavorites.push(cardFound); 
         cardSelected.push(cardFound);
-    } else {
-        
-    }
+    } 
     renderCardFounded();  
     renderFav();
     saveFav();
     saveSelected();
+    listenerCards();
 }
 
 function handleClickFavorites(event) {
@@ -190,8 +189,8 @@ function handleClickFavorites(event) {
 // events
 
 userInput.addEventListener('click', handleFilter);
-btnSearch.addEventListener('click', handleFilter);//
-btnReset.addEventListener('click', handleReset);//
+btnSearch.addEventListener('click', handleFilter);
+btnReset.addEventListener('click', handleReset);
 
 
 loadFav();
